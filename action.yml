@@ -15,6 +15,10 @@ inputs:
   update_ts:
     description: 'Update prev message'
     required: false
+outputs:
+  ts:
+    description: "ID of message"
+    value: ${{ steps.slack.outputs.ts }}
 runs:
   using: 'composite'
   steps:
