@@ -18,11 +18,11 @@ runs:
     - name: Set Slack color
       shell: bash
       run: |
-        if [[ ${{ env.SLACK_COLOR }} == 'warning' ]]; then
+        if [[ ${{ imputs.slack_color }} == 'warning' ]]; then
           echo "emoji=:hourglass_flowing_sand:" >> $GITHUB_ENV
-        elif [[ ${{ env.SLACK_COLOR }} == 'good' ]]; then
+        elif [[ ${{ inputs.slack_color }} == 'good' ]]; then
           echo "emoji=:white_check_mark:" >> $GITHUB_ENV
-        elif [[ ${{ env.SLACK_COLOR }} == 'danger' ]]; then
+        elif [[ ${{ inputs.slack_color }} == 'danger' ]]; then
           echo "emoji=:red_circle:" >> $GITHUB_ENV
         fi
     - id: slack
