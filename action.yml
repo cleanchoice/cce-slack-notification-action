@@ -33,7 +33,7 @@ runs:
       id: slack
       with:
         channel-id: "${{ inputs.slack_channel }}" 
-        update-ts: ${{ steps.slack.outputs.ts }}
+        update-ts: ${{ inputs.update_ts }}
         payload: |
           {
             "text": ":github: Workflow run by: *${{ github.actor }}*",
