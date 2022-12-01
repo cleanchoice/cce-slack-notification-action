@@ -12,6 +12,9 @@ inputs:
   slack_color:
     description: 'Slack color line'
     required: true
+  update_ts:
+    description: 'Update prev message'
+    required: false
 runs:
   using: 'composite'
   steps:
@@ -25,10 +28,11 @@ runs:
         elif [[ ${{ inputs.slack_color }} == 'danger' ]]; then
           echo "emoji=:red_circle:" >> $GITHUB_ENV
         fi
-    - id: slack
+    - name: Slack Action
       uses: slackapi/slack-github-action@v1
       with:
         channel-id: "#${{ inputs.slack_channel }}" 
+        update-ts: ${{ inputs.update-ts }}
         payload: |
           {
             "text": ":github: Workflow run by: *${{ github.actor }}*",
