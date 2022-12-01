@@ -31,7 +31,7 @@ runs:
     - name: Slack Action
       uses: slackapi/slack-github-action@v1
       with:
-        channel-id: "#${{ inputs.slack_channel }}" 
+        channel-id: "${{ inputs.slack_channel }}" 
         update-ts: ${{ inputs.update_ts }}
         payload: |
           {
