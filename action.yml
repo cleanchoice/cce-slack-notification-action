@@ -1,0 +1,62 @@
+
+name: 'cce-slack-notification-action'
+author: 'CleanChoice Energy'
+description: 'Composite action for Slack notification'
+inputs:
+  slack_channel:
+    description: 'Name or ID of the Slack channel'
+    required: true
+  slack_status:
+    description: 'Custom status as a string'
+    required: true
+  slack_color:
+    description: 'Slack color line'
+    required: true
+runs:
+  using: 'composite'
+  steps:
+    - name: Set Slack color
+      shell: bash
+      run: |
+        if [[ ${{ env.SLACK_COLOR }} == 'warning' ]]; then
+          echo "emoji=:hourglass_flowing_sand:" >> $GITHUB_ENV
+        elif [[ ${{ env.SLACK_COLOR }} == 'good' ]]; then
+          echo "emoji=:white_check_mark:" >> $GITHUB_ENV
+        elif [[ ${{ env.SLACK_COLOR }} == 'danger' ]]; then
+          echo "emoji=:red_circle:" >> $GITHUB_ENV
+        fi
+    - id: slack
+      uses: slackapi/slack-github-action@v1
+      with:
+        channel-id: "#${{ inputs.slack_channel }}" 
+        payload: |
+          {
+            "text": ":github: Workflow run by: *${{ github.actor }}*",
+            "attachments": [
+              {
+                "color": "${{ inputs.slack_color }}",
+                "fields": [
+                  {
+                    "title": "Workflow",
+                    "short": true,
+                    "value": "<https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}|${{ github.workflow }}>"
+                  },
+                  {
+                    "title": "Branch",
+                    "value": "<https://github.com/${{ github.repository }}/tree/${{ github.head_ref || github.ref_name}}|${{ github.head_ref || github.ref_name}}>",
+                    "short": true
+                  },
+                  {
+                    "title": "Status",
+                    "value": "${{ env.emoji }} ${{ inputs.slack_status }}",
+                    "short": true
+                  },
+                  {
+                    "title": "Event",
+                    "value": "<${{ github.event.pull_request.html_url || github.event.head_commit.url }}|${{ github.event_name }}>",
+                    "short": true
+                  }
+                ]
+              }
+            ]
+          }
