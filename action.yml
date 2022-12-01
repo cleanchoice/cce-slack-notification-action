@@ -15,6 +15,10 @@ inputs:
   update_ts:
     description: 'Update prev message'
     required: false
+outputs:
+  ts:
+    description: 'Prev message ID'
+    value: ${{ steps.slack.outputs.ts }}
 runs:
   using: 'composite'
   steps:
@@ -29,6 +33,7 @@ runs:
           echo "emoji=:red_circle:" >> $GITHUB_ENV
         fi
     - name: Slack Action
+      id: slack
       uses: slackapi/slack-github-action@v1
       with:
         channel-id: "#${{ inputs.slack_channel }}" 
