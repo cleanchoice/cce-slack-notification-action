@@ -15,6 +15,9 @@ inputs:
   update_ts:
     description: 'Update prev message'
     required: false
+#  slack_bot_token:
+#    description: 'Slack token'
+#    default: ${{ secrets.SLACK_BOT_TOKEN }}
 outputs:
   ts:
     description: "ID of message"
@@ -27,7 +30,7 @@ runs:
       run: |
         get_channel_id=$(curl -X GET "https://slack.com/api/conversations.list" \
         -H  "accept: application/x-www-form-urlencoded" \
-        -H  "Authorization: Bearer ${{ secrets.SLACK_BOT_TOKEN }}" | python3 -m json.tool | grep -B1 ${{ inputs.slack_channel }} | head -1 | cut -d"\"" -f4)
+        -H  "Authorization: Bearer ${{ env.SLACK_BOT_TOKEN }}" | python3 -m json.tool | grep -B1 ${{ inputs.slack_channel }} | head -1 | cut -d"\"" -f4)
         echo "slack_channel_id=$get_channel_id" >> $GITHUB_ENV
     - name: Set Slack color
       shell: bash
