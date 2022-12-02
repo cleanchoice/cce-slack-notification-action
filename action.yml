@@ -15,9 +15,6 @@ inputs:
   update_ts:
     description: 'Update prev message'
     required: false
-#  slack_bot_token:
-#    description: 'Slack token'
-#    default: ${{ secrets.SLACK_BOT_TOKEN }}
 outputs:
   ts:
     description: "ID of message"
@@ -25,13 +22,13 @@ outputs:
 runs:
   using: 'composite'
   steps:
-    - name: Conver ID to Name
-      shell: bash
-      run: |
-        get_channel_id=$(curl -X GET "https://slack.com/api/conversations.list" \
-        -H  "accept: application/x-www-form-urlencoded" \
-        -H  "Authorization: Bearer ${{ env.SLACK_BOT_TOKEN }}" | python3 -m json.tool | grep -B1 ${{ inputs.slack_channel }} | head -1 | cut -d"\"" -f4)
-        echo "slack_channel_id=$get_channel_id" >> $GITHUB_ENV
+#    - name: Conver ID to Name
+#      shell: bash
+#      run: |
+#        get_channel_id=$(curl -X GET "https://slack.com/api/conversations.list" \
+#        -H  "accept: application/x-www-form-urlencoded" \
+#        -H  "Authorization: Bearer ${{ env.SLACK_BOT_TOKEN }}" | python3 -m json.tool | grep -B1 ${{ inputs.slack_channel }} | head -1 | cut -d"\"" -f4)
+#        echo "slack_channel_id=$get_channel_id" >> $GITHUB_ENV
     - name: Set Slack color
       shell: bash
       run: |
@@ -46,7 +43,8 @@ runs:
       uses: slackapi/slack-github-action@v1
       id: slack
       with:
-        channel-id: "${{ env.slack_channel_id }}" 
+#        channel-id: "${{ env.slack_channel_id }}" 
+        channel-id: "${{ inputs.slack_channel }}" 
         update-ts: ${{ inputs.update_ts }}
         payload: |
           {
