@@ -3,20 +3,20 @@ name: 'cce-slack-notification-action'
 author: 'CleanChoice Energy'
 description: 'Composite action for Slack notification'
 inputs:
-  slack_channel:
+  channel:
     description: 'Name or ID of the Slack channel'
     required: true
-  slack_status:
+  status:
     description: 'Custom status as a string'
     required: true
-  slack_color:
+  color:
     description: 'Slack color line'
     required: true
-  update_ts:
+  message_id:
     description: 'Update prev message'
     required: false
 outputs:
-  ts:
+  message_id:
     description: "ID of message"
     value: ${{ steps.slack.outputs.ts }}
 runs:
@@ -27,16 +27,16 @@ runs:
       run: |
         get_channel_id=$(curl -X GET "https://slack.com/api/conversations.list?limit=1000&pretty=1" \
         -H  "accept: application/x-www-form-urlencoded" \
-        -H  "Authorization: Bearer ${{ env.SLACK_BOT_TOKEN }}" | jq -r '.channels[]|select(.name=="'${{ inputs.slack_channel }}'") | .id')
-        echo "slack_channel_id=$get_channel_id" >> $GITHUB_ENV
+        -H  "Authorization: Bearer ${{ env.SLACK_BOT_TOKEN }}" | jq -r '.channels[]|select(.name=="'${{ inputs.channel }}'") | .id')
+        echo "channel_id=$get_channel_id" >> $GITHUB_ENV
     - name: Set Slack color
       shell: bash
       run: |
-        if [[ ${{ inputs.slack_color }} == 'warning' ]]; then
+        if [[ ${{ inputs.color }} == 'warning' ]]; then
           echo "emoji=:hourglass_flowing_sand:" >> $GITHUB_ENV
-        elif [[ ${{ inputs.slack_color }} == 'good' ]]; then
+        elif [[ ${{ inputs.color }} == 'good' ]]; then
           echo "emoji=:white_check_mark:" >> $GITHUB_ENV
-        elif [[ ${{ inputs.slack_color }} == 'danger' ]]; then
+        elif [[ ${{ inputs.color }} == 'danger' ]]; then
           echo "emoji=:red_circle:" >> $GITHUB_ENV
         fi
     - name: Set Timestamp
@@ -46,14 +46,14 @@ runs:
       uses: slackapi/slack-github-action@v1
       id: slack
       with:
-        channel-id: "${{ env.slack_channel_id }}" 
-        update-ts: ${{ inputs.update_ts }}
+        channel-id: "${{ env.channel_id }}" 
+        update-ts: ${{ inputs.message_id }}
         payload: |
           {
             "text": ":github: Workflow run by: *${{ github.actor }}*",
             "attachments": [
               {
-                "color": "${{ inputs.slack_color }}",
+                "color": "${{ inputs.color }}",
                 "fields": [
                   {
                     "title": "Repo",
@@ -67,7 +67,7 @@ runs:
                   },
                   {
                     "title": "Status",
-                    "value": "${{ env.emoji }} ${{ inputs.slack_status }}",
+                    "value": "${{ env.emoji }} ${{ inputs.status }}",
                     "short": true
                   },
                   {
