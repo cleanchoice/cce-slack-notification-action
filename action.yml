@@ -27,7 +27,7 @@ runs:
       run: |
         get_channel_id=$(curl -X GET "https://slack.com/api/conversations.list?limit=1000&pretty=1" \
         -H  "accept: application/x-www-form-urlencoded" \
-        -H  "Authorization: Bearer ${{ env.SLACK_BOT_TOKEN }}" | jq '.channels[]|select(.name=="'${{ inputs.slack_channel }}'") | .id')
+        -H  "Authorization: Bearer ${{ env.SLACK_BOT_TOKEN }}" | jq -r '.channels[]|select(.name=="'${{ inputs.slack_channel }}'") | .id')
         echo "slack_channel_id=$get_channel_id" >> $GITHUB_ENV
     - name: Set Slack color
       shell: bash
