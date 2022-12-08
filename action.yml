@@ -46,12 +46,12 @@ runs:
         for each in $(echo ${{ inputs.status }})
         do
           echo $each
-          echo "${{ env.emoji }} $each\n" >> slack_statuses
+          echo "${{ env.emoji }} $each\n" >> $GITHUB_OUTPUT
         done
-        cat slack_statuses
-        statuses="${$(cat slack_statuses)//$'\n'/'%0A'}"
-        echo "statuses=$statuses" >> $GITHUB_OUTPUT
-        rm -f ./slack_statuses
+#        cat slack_statuses
+#        statuses="${$(cat slack_statuses)//$'\n'/'%0A'}"
+#        echo "statuses=$statuses" >> $GITHUB_OUTPUT
+#        rm -f ./slack_statuses
     - name: Set Timestamp
       shell: bash
       run: echo "timestamp=$(date +%s)" >> $GITHUB_ENV
