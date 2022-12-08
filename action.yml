@@ -39,6 +39,17 @@ runs:
         elif [[ ${{ inputs.color }} == 'danger' ]]; then
           echo "emoji=:red_circle:" >> $GITHUB_ENV
         fi
+    - name: Set Statuses
+      shell: bash
+      id: status
+      run: |
+        for each in $(echo ${{ inputs.status }})
+        do
+          echo $each
+          echo "${{ env.emoji }} $each\n" >> slack_statuses
+        done
+        echo "statuses=$(cat slack_statuses)" >> $GITHUB_OUTPUT
+        rm -f ./slack_statuses
     - name: Set Timestamp
       shell: bash
       run: echo "timestamp=$(date +%s)" >> $GITHUB_ENV
@@ -67,7 +78,7 @@ runs:
                   },
                   {
                     "title": "Status",
-                    "value": "${{ env.emoji }} ${{ inputs.status }}",
+                    "value": "${{ steps.status.output.statuses}}",
                     "short": true
                   },
                   {
