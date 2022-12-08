@@ -46,7 +46,7 @@ runs:
         for each in $(echo ${{ inputs.status }})
         do
           echo $each
-          echo "$each=$each\n" >> $GITHUB_OUTPUT
+          echo "$each=${{ env.emoji }} $each\n" >> $GITHUB_OUTPUT
         done
     - name: Set Timestamp
       shell: bash
