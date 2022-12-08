@@ -46,7 +46,7 @@ runs:
         for each in $(echo ${{ inputs.status }})
         do
           echo $each
-          echo "${{ env.emoji }} $each" >> slack_statuses
+          echo "${{ env.emoji }} $each\n" >> slack_statuses
         done
         test_string=$(cat << EOF
         $(cat slack_statuses)
