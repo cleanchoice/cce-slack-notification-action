@@ -53,8 +53,7 @@ runs:
         EOF
         )
         cat slack_statuses
-        statuses="${test_string//$'\n'/'%0A'}"
-        echo "statuses=$statuses" >> $GITHUB_OUTPUT
+        echo "statuses=$test_string" >> $GITHUB_OUTPUT
         rm -f ./slack_statuses
     - name: Set Timestamp
       shell: bash
