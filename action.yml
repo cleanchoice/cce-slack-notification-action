@@ -46,15 +46,8 @@ runs:
         for each in $(echo ${{ inputs.status }})
         do
           echo $each
-          echo "${{ env.emoji }} $each\n" >> slack_statuses
+          echo "$each=$each\n" >> $GITHUB_OUTPUT
         done
-        test_string=$(cat << EOF
-        $(cat slack_statuses)
-        EOF
-        )
-        cat slack_statuses
-        echo "statuses=$test_string" >> $GITHUB_OUTPUT
-        rm -f ./slack_statuses
     - name: Set Timestamp
       shell: bash
       run: echo "timestamp=$(date +%s)" >> $GITHUB_ENV
@@ -83,7 +76,7 @@ runs:
                   },
                   {
                     "title": "Status",
-                    "value": "${{ steps.status.output.statuses}}",
+                    "value": "${{join(steps.status.outputs.*, '\n')}}",
                     "short": true
                   },
                   {
