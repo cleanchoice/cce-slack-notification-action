@@ -39,6 +39,14 @@ runs:
         elif [[ ${{ inputs.color }} == 'danger' ]]; then
           echo "emoji=:red_circle:" >> $GITHUB_ENV
         fi
+    - name: Set Event
+      shell: bash
+      run: |
+        if [[ ${{ github.event_name }} == 'delete' ]]; then
+          echo "event_field=delete" >> $GITHUB_ENV
+        elif [[ ${{ github.event_name }} == 'push' || ${{ github.event_name }} == 'pull_request' ]]; then
+          echo "event_field=<${{ github.event.pull_request.html_url || github.event.head_commit.url }}|${{ github.event_name }}>" >> $GITHUB_ENV
+        fi
     - name: Set Timestamp
       shell: bash
       run: echo "timestamp=$(date +%s)" >> $GITHUB_ENV
@@ -77,7 +85,7 @@ runs:
                   },
                   {
                     "title": "Event",
-                    "value": "<${{ github.event.pull_request.html_url || github.event.head_commit.url }}|${{ github.event_name }}>",
+                    "value": "${{ env.event_field }}",
                     "short": true
                   }
                 ],
