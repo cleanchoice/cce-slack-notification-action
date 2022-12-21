@@ -58,35 +58,38 @@ runs:
         update-ts: ${{ inputs.message_id }}
         payload: |
           {
-            "text": ":github: Workflow run by: *${{ github.actor }}*",
+            "text": ":github: Workflow run by ${{ env.event_field }} : *${{ github.actor }}*",
             "attachments": [
               {
                 "color": "${{ inputs.color }}",
-                "fields": [
+                "blocks": [
                   {
-                    "title": "Repo",
-                    "short": true,
-                    "value": "<https://github.com/${{ github.repository }}|${{ github.repository }}>"
+                    "type": "section",
+                    "fields": [{
+                      "type": "mrkdwn",
+                      "text": "Repo: <https://github.com/${{ github.repository }}|${{ github.repository }}>"
+                    }]
                   },
                   {
-                    "title": "Workflow",
-                    "short": true,
-                    "value": "<https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}|${{ github.workflow }}>"
+                    "type": "section",
+                    "fields": [{
+                      "type": "mrkdwn",
+                      "text": "Workflow: <https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}|${{ github.workflow }}>"
+                    }]
                   },
                   {
-                    "title": "Status",
-                    "value": "${{ env.emoji }} ${{ inputs.status }}",
-                    "short": true
+                    "type": "section",
+                    "fields": [{
+                      "type": "mrkdwn",
+                      "text": "Branch: <https://github.com/${{ github.repository }}/tree/${{ github.head_ref || github.ref_name}}|${{ github.head_ref || github.ref_name}}>"
+                    }]
                   },
                   {
-                    "title": "Branch",
-                    "value": "<https://github.com/${{ github.repository }}/tree/${{ github.head_ref || github.ref_name}}|${{ github.head_ref || github.ref_name}}>",
-                    "short": true
-                  },
-                  {
-                    "title": "Event",
-                    "value": "${{ env.event_field }}",
-                    "short": true
+                    "type": "section",
+                    "fields": [{
+                      "type": "mrkdwn",
+                      "text": "Status: ${{ env.emoji }} ${{ inputs.status }}"
+                    }]
                   }
                 ],
                 "footer": "${{ github.repository }}",
