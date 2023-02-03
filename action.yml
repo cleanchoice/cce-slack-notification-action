@@ -69,7 +69,7 @@ runs:
         else
           for value in ${{ env.multi_status }}
           do
-            echo "$value" >> statuses.txt
+            echo $value >> statuses.txt
           done
           pattern=$(cat statuses.txt | grep ${{ inputs.update_status }})
           echo "pattern - " $pattern
