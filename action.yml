@@ -9,6 +9,9 @@ inputs:
   status:
     description: 'Custom status as a string'
     required: true
+  update_status:
+    description: 'Update status'
+    required: false
   color:
     description: 'Slack color line'
     required: true
@@ -43,11 +46,15 @@ runs:
       shell: bash
       id: status
       run: |
-        for each in $(echo ${{ inputs.status }})
-        do
-          echo $each
-          echo "$each=${{ env.emoji }} $each\n" >> $GITHUB_OUTPUT
-        done
+        if [ ${{ inputs.update_status }} == null ];then
+          for each in $(echo ${{ inputs.status }})
+          do
+            echo $each
+            echo "$each=${{ env.emoji }} $each\n" >> $GITHUB_OUTPUT
+          done
+        else
+          echo "${{ inputs.update_status }}=${{ env.emoji }} ${{ inputs.update_status }}\n" >> $GITHUB_OUTPUT
+        fi
     - name: Set Timestamp
       shell: bash
       run: echo "timestamp=$(date +%s)" >> $GITHUB_ENV
