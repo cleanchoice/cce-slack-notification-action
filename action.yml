@@ -45,6 +45,10 @@ runs:
           echo "multi_status<<EOF" >> $GITHUB_ENV
           echo "$statuses" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
+          for each in $statuses
+          do
+            echo $each
+          done
         fi
     - name: Set Slack color
       shell: bash
