@@ -69,8 +69,10 @@ runs:
         else
           for value in ${{ env.multi_status }}
           do
+            echo $value
             echo $value >> statuses.txt
           done
+          cat statuses.txt
           pattern=$(cat statuses.txt | grep ${{ inputs.update_status }})
           echo "pattern - " $pattern
           sed -e "s/$pattern/${{ env.emoji }}\ ${{ inputs.update_status }}/" statuses.txt
