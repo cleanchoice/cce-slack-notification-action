@@ -67,12 +67,15 @@ runs:
             echo "$each=${{ env.emoji }} $each\n" >> $GITHUB_OUTPUT
           done
         else
-          echo ${{ env.multi_status }} > statuses.txt
+          for value in ${{ env.multi_status }}
+          do
+            echo "$value" >> statuses.txt
+          done
           pattern=$(cat statuses.txt | grep ${{ inputs.update_status }})
           echo "pattern - " $pattern
-          new_statuses=$(cat statuses.txt | sed "s/$pattern/${{ env.emoji }}\ ${{ inputs.update_status }}/")
-          echo "new statuses - " $new_statuses
-          for each in $(echo $new_statuses | cut -d":" -f3 | cut -d" " -f2)
+          sed -e "s/$pattern/${{ env.emoji }}\ ${{ inputs.update_status }}/" statuses.txt
+          cat statuses.txt
+          for each in $(cat statuses.txt | cut -d":" -f3 | cut -d" " -f2)
           do
             echo $each
             echo "$each=$(echo $new_statuses | grep $each) \n" >> $GITHUB_OUTPUT
