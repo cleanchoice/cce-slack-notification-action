@@ -74,7 +74,7 @@ runs:
           for each in $(echo $new_statuses | cut -d":" -f3 | cut -d" " -f2)
           do
             echo $each
-            echo "$each=$(echo $new_statuses | grep $each)\n" >> $GITHUB_OUTPUT
+            echo "$each=$(echo $new_statuses | grep $each) \n" >> $GITHUB_OUTPUT
           done
         fi
     - name: Set Timestamp
