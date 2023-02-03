@@ -41,7 +41,7 @@ runs:
         else
           statuses=$(curl -X GET \
           "https://slack.com/api/conversations.history?channel=${{ env.channel_id }}&inclusive=true&latest=${{ inputs.message_id }}&limit=1&pretty=1" \
-          -H "Authorization: Bearer ${{ env.SLACK_BOT_TOKEN }}" | jq -r '.messages[].attachments[].fields[]|select(.title=="Status") | .value' | sed '/^$/d')
+          -H "Authorization: Bearer ${{ env.SLACK_BOT_TOKEN }}" | jq -r '.messages[].attachments[].fields[]|select(.title=="Status") | .value' | sed '/^$/d' | sed 's/ //')
           echo "multi_status<<EOF" >> $GITHUB_ENV
           echo "$statuses" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
@@ -69,7 +69,7 @@ runs:
         else
           pattern=$(echo "${{ env.multi_status }}" | grep ${{ inputs.update_status }})
           echo "pattern - " $pattern
-          new_statuses=$(echo "${{ env.multi_status }}" | sed "/$pattern/${{ env.emoji }}\ ${{ inputs.update_status }}")
+          new_statuses=$(echo "${{ env.multi_status }}" | sed "s/$pattern/${{ env.emoji }}\ ${{ inputs.update_status }}")
           echo "new statuses - " $new_statuses
           for each in $(echo $new_statuses | cut -d":" -f3 | cut -d" " -f2)
           do
