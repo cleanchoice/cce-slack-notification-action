@@ -70,7 +70,7 @@ runs:
           pattern=$(echo ${{ env.multi_status }} | grep ${{ inputs.update_status }})
           new_statuses=$(echo ${{ env.multi_status }} | sed "/$pattern/${{ env.emoji }}\ ${{ inputs.update_status }}")
 
-          for each in $(echo $new_statuses | cut -d" " -f2)
+          for each in $(echo $new_statuses | cut -d":" -f3 | cut -d" " -f2)
           do
             echo $each
             echo "$each=$(echo $new_statuses | grep $each)\n" >> $GITHUB_OUTPUT
