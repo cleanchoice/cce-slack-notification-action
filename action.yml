@@ -32,13 +32,18 @@ runs:
         -H  "accept: application/x-www-form-urlencoded" \
         -H  "Authorization: Bearer ${{ env.SLACK_BOT_TOKEN }}" | jq -r '.channels[]|select(.name=="'${{ inputs.channel }}'") | .id')
         echo "channel_id=$get_channel_id" >> $GITHUB_ENV
-    - name: Get message
+    - name: Get message statuses
       shell: bash
-      id: message
+      id: message_statuses
       run: |
-        curl -X GET \
-        "https://slack.com/api/conversations.history?channel=${{ env.channel_id }}&inclusive=true&latest=1675424253&limit=1&pretty=1" \
-        -H "Authorization: Bearer ${{ env.SLACK_BOT_TOKEN }}"
+        if [ -z ${{ inputs.message_id }} ];then
+          echo "Skip multi status update"
+        else
+          statuses=$(curl -X GET \
+          "https://slack.com/api/conversations.history?channel=${{ env.channel_id }}&inclusive=true&latest=${{ inputs.message_id }}&limit=1&pretty=1" \
+          -H "Authorization: Bearer ${{ env.SLACK_BOT_TOKEN }}" | jq -r '.messages[].attachments[].fields[]|select(.title=="Status") | .value' | sed '/^$/d)
+          echo "multi_status=$statuses" >> $GITHUB_ENV
+        fi
     - name: Set Slack color
       shell: bash
       run: |
@@ -60,7 +65,14 @@ runs:
             echo "$each=${{ env.emoji }} $each\n" >> $GITHUB_OUTPUT
           done
         else
-          echo "${{ inputs.update_status }}=${{ env.emoji }} ${{ inputs.update_status }}\n" >> $GITHUB_OUTPUT
+          pattern=$(echo ${{ env.multi_status }} | grep ${{ inputs.update_status }})
+          new_statuses=$(echo ${{ env.multi_status }} | sed "/$pattern/${{ env.emoji }}\ ${{ inputs.update_status }}")
+
+          for each in $(echo $new_statuses | cut -d" " -f2)
+          do
+            echo $each
+            echo "$each=$(echo $new_statuses | grep $each)\n" >> $GITHUB_OUTPUT
+          done
         fi
     - name: Set Timestamp
       shell: bash
