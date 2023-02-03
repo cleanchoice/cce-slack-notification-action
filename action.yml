@@ -46,7 +46,7 @@ runs:
       shell: bash
       id: status
       run: |
-        if [ ${{ inputs.update_status }} == null ];then
+        if [ -z ${{ inputs.update_status }} ];then
           for each in $(echo ${{ inputs.status }})
           do
             echo $each
