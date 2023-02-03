@@ -41,7 +41,7 @@ runs:
         else
           statuses=$(curl -X GET \
           "https://slack.com/api/conversations.history?channel=${{ env.channel_id }}&inclusive=true&latest=${{ inputs.message_id }}&limit=1&pretty=1" \
-          -H "Authorization: Bearer ${{ env.SLACK_BOT_TOKEN }}" | jq -r '.messages[].attachments[].fields[]|select(.title=="Status") | .value' | sed '/^$/d)
+          -H "Authorization: Bearer ${{ env.SLACK_BOT_TOKEN }}" | jq -r '.messages[].attachments[].fields[]|select(.title=="Status") | .value' | sed '/^$/d')
           echo "multi_status=$statuses" >> $GITHUB_ENV
         fi
     - name: Set Slack color
