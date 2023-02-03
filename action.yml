@@ -68,8 +68,9 @@ runs:
           done
         else
           pattern=$(echo ${{ env.multi_status }} | grep ${{ inputs.update_status }})
+          echo "pattern - " $pattern
           new_statuses=$(echo ${{ env.multi_status }} | sed "/$pattern/${{ env.emoji }}\ ${{ inputs.update_status }}")
-
+          echo "new statuses - " $new_statuses
           for each in $(echo $new_statuses | cut -d":" -f3 | cut -d" " -f2)
           do
             echo $each
