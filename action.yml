@@ -72,9 +72,9 @@ runs:
           for each in ${{join(steps.message_statuses.outputs.*, ' ')}};do
             echo "$each"
             echo "check pattern"
-            echo "$each" | grep ${{ inputs.update_status }}; echo $?
+            echo "$each" | grep ${{ inputs.update_status }} || true
             echo "check pattern var"
-            pattern=$(echo "$each" | grep ${{ inputs.update_status }})
+            pattern=$(echo "$each" | grep ${{ inputs.update_status }} || true)
             echo "$pattern"
             if [ -z $pattern ];then
               echo "skipped"
