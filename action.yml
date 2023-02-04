@@ -51,7 +51,7 @@ runs:
     - name: Set Slack color
       shell: bash
       run: |
-        if [ -z ${{ inputs.update_status }} || ${{ inputs.color }} == 'danger' ];then
+        if [[ -z ${{ inputs.update_status }} || ${{ inputs.color }} == 'danger' ]];then
           echo "color=${{ inputs.color }}" >> $GITHUB_ENV
         else
           for each in ${{join(steps.message_statuses.outputs.*, ' ')}};do
