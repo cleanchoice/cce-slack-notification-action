@@ -51,13 +51,28 @@ runs:
     - name: Set Slack color
       shell: bash
       run: |
+        if [ -z ${{ inputs.update_status }} || "${{ inputs.color }}" == 'danger' ];then
+          echo "color=${{ inputs.color }}" >> $GITHUB_ENV
+        else
+          for each in ${{join(steps.message_statuses.outputs.*, ' ')}};do
+            name=$(echo "$each" | cut -d":" -f3 | cut -d"-" -f2)
+            pattern=$(echo "$each" | grep -v "$name" | grep ':hourglass_flowing_sand:' || true)
+            if [ -z $pattern ];then
+              echo "color=good" >> $GITHUB_ENV
+            else
+              echo "color=warning" >> $GITHUB_ENV
+            fi
+          done
+        fi
+    - name: Set emoji
+      shell: bash
+      run: |
         if [[ ${{ inputs.color }} == 'warning' ]]; then
           echo "emoji=:hourglass_flowing_sand:" >> $GITHUB_ENV
         elif [[ ${{ inputs.color }} == 'good' ]]; then
           echo "emoji=:white_check_mark:" >> $GITHUB_ENV
         elif [[ ${{ inputs.color }} == 'danger' ]]; then
           echo "emoji=:red_circle:" >> $GITHUB_ENV
-        fi
     - name: Set Statuses
       shell: bash
       id: status
@@ -101,7 +116,7 @@ runs:
             "text": ":github: Workflow run by: *${{ github.actor }}*",
             "attachments": [
               {
-                "color": "${{ inputs.color }}",
+                "color": "${{ env.color }}",
                 "fields": [
                   {
                     "title": "Repo",
