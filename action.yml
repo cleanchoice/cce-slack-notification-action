@@ -48,26 +48,6 @@ runs:
             echo "$name=$each" >> $GITHUB_OUTPUT
           done
         fi
-    - name: Set Slack color
-      shell: bash
-      run: |
-        if [[ -z "${{ inputs.update_status }}" || "${{ inputs.color }}" == danger ]];then
-          echo "color=${{ inputs.color }}" >> $GITHUB_ENV
-        else
-          for each in ${{join(steps.message_statuses.outputs.*, ' ')}};do
-            name=$(echo "$each" | cut -d":" -f3 | cut -d"-" -f2)
-            echo "$name"
-            echo "$each" | grep -v "$name" | grep ':hourglass_flowing_sand:' || true
-            pattern=$(echo "$each" | grep -v "$name" | grep ':hourglass_flowing_sand:' || true)
-            echo "$pattern"
-            if [ -z $pattern ];then
-              echo "color=good" >> $GITHUB_ENV
-            else
-              echo "color=warning" >> $GITHUB_ENV
-              break
-            fi
-          done
-        fi
     - name: Set emoji
       shell: bash
       run: |
@@ -105,6 +85,26 @@ runs:
             name=$(echo "$each" | cut -d":" -f3 | cut -d"-" -f2)
             echo "$name"
             echo "$name=$(echo "$each" | sed 's/-/ /')\n" >> $GITHUB_OUTPUT
+          done
+        fi
+    - name: Set Slack color
+      shell: bash
+      run: |
+        if [[ -z "${{ inputs.update_status }}" || "${{ inputs.color }}" == danger ]];then
+          echo "color=${{ inputs.color }}" >> $GITHUB_ENV
+        else
+          for each in ${{join(steps.status.outputs., '\n')}};do
+            name=$(echo "$each" | cut -d":" -f3 | cut -d"-" -f2)
+            echo "$name"
+            echo "$each" | grep -v "$name" | grep ':hourglass_flowing_sand:' || true
+            pattern=$(echo "$each" | grep -v "$name" | grep ':hourglass_flowing_sand:' || true)
+            echo "$pattern"
+            if [ -z $pattern ];then
+              echo "color=good" >> $GITHUB_ENV
+            else
+              echo "color=warning" >> $GITHUB_ENV
+              break
+            fi
           done
         fi
     - name: Set Timestamp
