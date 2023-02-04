@@ -72,12 +72,15 @@ runs:
           for each in ${{join(steps.message_statuses.outputs.*, ' ')}};do
             echo "$each"
             pattern=$(echo "$each" | grep ${{ inputs.update_status }})
+            echo "$pattern"
             if [ -z $pattern ];then
               echo "skipped"
             else
               each=$(echo "$each" | sed "s/$pattern/${{ env.emoji }}-${{ inputs.update_status }}/")
+              echo "$each"
             fi
             name=$(echo "$each" | cut -d":" -f3 | cut -d"-" -f2)
+            echo "$name"
             echo "$name=${{ env.emoji }} $(echo "$each" | sed 's/-/ /')\n" >> $GITHUB_OUTPUT
           done
         fi
