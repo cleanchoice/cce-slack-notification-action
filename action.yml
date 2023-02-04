@@ -73,6 +73,7 @@ runs:
           echo "emoji=:white_check_mark:" >> $GITHUB_ENV
         elif [[ ${{ inputs.color }} == 'danger' ]]; then
           echo "emoji=:red_circle:" >> $GITHUB_ENV
+        fi
     - name: Set Statuses
       shell: bash
       id: status
