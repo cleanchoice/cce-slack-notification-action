@@ -57,10 +57,12 @@ runs:
           for each in ${{join(steps.message_statuses.outputs.*, ' ')}};do
             name=$(echo "$each" | cut -d":" -f3 | cut -d"-" -f2)
             pattern=$(echo "$each" | grep -v "$name" | grep ':hourglass_flowing_sand:' || true)
+            echo "$pattern"
             if [ -z $pattern ];then
               echo "color=good" >> $GITHUB_ENV
             else
               echo "color=warning" >> $GITHUB_ENV
+              break
             fi
           done
         fi
