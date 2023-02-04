@@ -56,6 +56,8 @@ runs:
         else
           for each in ${{join(steps.message_statuses.outputs.*, ' ')}};do
             name=$(echo "$each" | cut -d":" -f3 | cut -d"-" -f2)
+            echo "$name"
+            echo "$each" | grep -v "$name" | grep ':hourglass_flowing_sand:' || true
             pattern=$(echo "$each" | grep -v "$name" | grep ':hourglass_flowing_sand:' || true)
             echo "$pattern"
             if [ -z $pattern ];then
