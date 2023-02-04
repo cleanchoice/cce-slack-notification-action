@@ -75,7 +75,7 @@ runs:
             if [ -z $pattern ];then
               echo "skipped"
             else
-              sed -e "s/$pattern/${{ env.emoji }}-${{ inputs.update_status }}/" statuses.txt
+              $each=$(echo $each | sed "s/$pattern/${{ env.emoji }}-${{ inputs.update_status }}/")
             fi
             name=$(echo $each | cut -d":" -f3 | cut -d"-" -f2)
             echo "$name=${{ env.emoji }} $(echo "$each" | sed 's/-/ /')\n" >> $GITHUB_OUTPUT
