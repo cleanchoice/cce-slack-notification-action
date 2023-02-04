@@ -72,7 +72,8 @@ runs:
           for each in ${{join(steps.message_statuses.outputs.*, ' ')}};do
             echo "$each"
             echo "check pattern"
-            echo "$each" | grep ${{ inputs.update_status }}
+            echo "$each" | grep ${{ inputs.update_status }} | echo $?
+            echo "check pattern var"
             pattern=$(echo "$each" | grep ${{ inputs.update_status }})
             echo "$pattern"
             if [ -z $pattern ];then
