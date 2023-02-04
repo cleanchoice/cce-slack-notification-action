@@ -42,13 +42,13 @@ runs:
           statuses=$(curl -X GET \
           "https://slack.com/api/conversations.history?channel=${{ env.channel_id }}&inclusive=true&latest=${{ inputs.message_id }}&limit=1&pretty=1" \
           -H "Authorization: Bearer ${{ env.SLACK_BOT_TOKEN }}" | jq -r '.messages[].attachments[].fields[]|select(.title=="Status") | .value' | sed '/^$/d' | sed 's/ /-/')
-          echo $statuses
           for string in $statuses;do
             echo $string
           done
-          for each in $(echo $statuses | cut -d":" -f3 | cut -d"_" -f2);do
+          for each in $statuses;do
             echo "$each"
-            echo "$each=$(echo $statuses | grep $each)" >> $GITHUB_OUTPUT
+            name=$(echo $each | cut -d":" -f3 | cut -d"-" -f2)
+            echo "$name=$(echo $statuses | grep $each | sed 's/-/ /')" >> $GITHUB_OUTPUT
           done
         fi
     - name: Set Slack color
