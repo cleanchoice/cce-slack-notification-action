@@ -48,7 +48,7 @@ runs:
           for each in $statuses;do
             echo "$each"
             name=$(echo $each | cut -d":" -f3 | cut -d"-" -f2)
-            echo "$name=$(echo $statuses | grep $each | sed 's/-/ /')" >> $GITHUB_OUTPUT
+            echo "$name=$(echo $each | sed 's/-/ /')" >> $GITHUB_OUTPUT
           done
         fi
     - name: Set Slack color
