@@ -45,10 +45,6 @@ runs:
           echo "multi_status<<EOF" >> $GITHUB_ENV
           echo "$statuses" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
-          for each in $statuses
-          do
-            echo $each
-          done
         fi
     - name: Set Slack color
       shell: bash
@@ -67,14 +63,14 @@ runs:
         if [ -z ${{ inputs.update_status }} ];then
           for each in $(echo ${{ inputs.status }})
           do
-            echo $each
+            echo "$each"
             echo "$each=${{ env.emoji }} $each\n" >> $GITHUB_OUTPUT
           done
         else
           for value in ${{ env.multi_status }}
           do
-            echo $value
-            echo $value >> statuses.txt
+            echo "$value"
+            echo "$value" >> statuses.txt
           done
           cat statuses.txt
           pattern=$(cat statuses.txt | grep ${{ inputs.update_status }})
@@ -83,7 +79,7 @@ runs:
           cat statuses.txt
           for each in $(cat statuses.txt | cut -d":" -f3 | cut -d" " -f2)
           do
-            echo $each
+            echo "$each"
             echo "$each=$(echo $new_statuses | grep $each) \n" >> $GITHUB_OUTPUT
           done
         fi
