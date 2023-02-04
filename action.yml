@@ -45,7 +45,7 @@ runs:
           for each in $statuses;do
             echo "$each"
             name=$(echo $each | cut -d":" -f3 | cut -d"-" -f2)
-            echo "$name=$(echo $each | sed 's/-/ /')" >> $GITHUB_OUTPUT
+            echo "$name=$each" >> $GITHUB_OUTPUT
           done
         fi
     - name: Set Slack color
@@ -69,19 +69,16 @@ runs:
             echo "$each=${{ env.emoji }} $each\n" >> $GITHUB_OUTPUT
           done
         else
-          for each in ${{ steps.message_statuses.outputs.* }}
-          do
+          for each in ${{join(steps.message_statuses.outputs.*, '\n')}};do
             echo "$each"
-          done
-          cat statuses.txt
-          pattern=$(cat statuses.txt | grep ${{ inputs.update_status }})
-          echo "pattern - " $pattern
-          sed -e "s/$pattern/${{ env.emoji }}\ ${{ inputs.update_status }}/" statuses.txt
-          cat statuses.txt
-          for each in $(cat statuses.txt | cut -d":" -f3 | cut -d" " -f2)
-          do
-            echo "$each"
-            echo "$each=$(echo $new_statuses | grep $each) \n" >> $GITHUB_OUTPUT
+            pattern=$(echo $each | grep ${{ inputs.update_status }})
+            if [ -z $pattern ];then
+              echo "skipped"
+            else
+              sed -e "s/$pattern/${{ env.emoji }}-${{ inputs.update_status }}/" statuses.txt
+            fi
+            name=$(echo $each | cut -d":" -f3 | cut -d"-" -f2)
+            echo "$name=${{ env.emoji }} $(echo "$each" | sed 's/-/ /')\n" >> $GITHUB_OUTPUT
           done
         fi
     - name: Set Timestamp
