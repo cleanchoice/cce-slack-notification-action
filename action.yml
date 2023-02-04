@@ -71,7 +71,7 @@ runs:
         else
           for each in ${{join(steps.message_statuses.outputs.*, ' ')}};do
             echo "$each"
-            pattern=$(echo $each | grep ${{ inputs.update_status }})
+            pattern=$(echo "$each" | grep ${{ inputs.update_status }})
             if [ -z $pattern ];then
               echo "skipped"
             else
