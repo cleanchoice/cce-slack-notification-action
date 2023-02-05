@@ -108,7 +108,7 @@ runs:
         update-ts: ${{ inputs.message_id }}
         payload: |
           {
-            "text": ":github_actions: <https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}|${{ github.workflow }}> triggered in :github: <https://github.com/${{ github.repository }}|${{ github.repository }}>\n:git_br: <https://github.com/${{ github.repository }}/tree/${{ github.head_ref || github.ref_name}}|${{ github.head_ref || github.ref_name}}> - <${{ github.event.pull_request.html_url || github.event.head_commit.url }}|${{ github.event_name }}> from *${{ github.actor }}*",
+            "text": ":github: <https://github.com/${{ github.repository }}|${{ github.repository }}>\n:github_actions: <https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}|${{ github.workflow }}>\n:git_br: <https://github.com/${{ github.repository }}/tree/${{ github.head_ref || github.ref_name}}|${{ github.head_ref || github.ref_name}}> - <${{ github.event.pull_request.html_url || github.event.head_commit.url }}|${{ github.event_name }}> from *${{ github.actor }}*",
             "attachments": [
               {
                 "color": "${{ env.color }}",
