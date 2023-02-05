@@ -41,10 +41,10 @@ runs:
         else
           statuses=$(curl -X GET \
           "https://slack.com/api/conversations.history?channel=${{ env.channel_id }}&inclusive=true&latest=${{ inputs.message_id }}&limit=1&pretty=1" \
-          -H "Authorization: Bearer ${{ env.SLACK_BOT_TOKEN }}" | jq -r '.messages[].attachments[].fields[]|select(.title=="Status") | .value' | sed '/^$/d' | sed 's/ /-/')
+          -H "Authorization: Bearer ${{ env.SLACK_BOT_TOKEN }}" | jq -r '.messages[].attachments[].fields[]|select(.title=="Status") | .value' | sed '/^$/d' | sed 's/ /#/')
           for each in $statuses;do
             echo "$each"
-            name=$(echo $each | cut -d":" -f3 | cut -d"-" -f2)
+            name=$(echo $each | cut -d":" -f3 | cut -d"#" -f2)
             echo "$name=$each" >> $GITHUB_OUTPUT
           done
         fi
@@ -70,21 +70,14 @@ runs:
           done
         else
           for each in ${{join(steps.message_statuses.outputs.*, ' ')}};do
-            echo "$each"
-            echo "check pattern"
-            echo "$each" | grep ${{ inputs.update_status }} || true
-            echo "check pattern var"
             pattern=$(echo "$each" | grep ${{ inputs.update_status }} || true)
-            echo "$pattern"
             if [ -z $pattern ];then
               echo "skipped"
             else
               each=$(echo "$each" | sed "s/$pattern/${{ env.emoji }}-${{ inputs.update_status }}/")
-              echo "$each"
             fi
-            name=$(echo "$each" | cut -d":" -f3 | cut -d"-" -f2)
-            echo "$name"
-            echo "$name=$(echo "$each" | sed 's/-/ /')\n" >> $GITHUB_OUTPUT
+            name=$(echo "$each" | cut -d":" -f3 | cut -d"#" -f2)
+            echo "$name=$(echo "$each" | sed 's/#/ /')\n" >> $GITHUB_OUTPUT
           done
         fi
     - name: Set Slack color
@@ -94,11 +87,8 @@ runs:
           echo "color=${{ inputs.color }}" >> $GITHUB_ENV
         else
           for each in ${{join(steps.status.outputs.*, ' ')}};do
-            name=$(echo "$each" | cut -d":" -f3 | cut -d"-" -f2)
-            echo "$name"
-            echo "$each" | grep ':hourglass_flowing_sand:' || true
+            name=$(echo "$each" | cut -d":" -f3 | cut -d"#" -f2)
             pattern=$(echo "$each" | grep ':hourglass_flowing_sand:' || true)
-            echo "$pattern"
             if [ -z $pattern ];then
               echo "color=good" >> $GITHUB_ENV
             else
