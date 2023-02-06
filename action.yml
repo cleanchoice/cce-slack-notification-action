@@ -62,13 +62,7 @@ runs:
       shell: bash
       id: status
       run: |
-        if [ -z ${{ inputs.update_status }} ];then
-          for each in $(echo ${{ inputs.status }})
-          do
-            echo "$each"
-            echo "$each=${{ env.emoji }} $each\n" >> $GITHUB_OUTPUT
-          done
-        elif [ ${{ job.status }} == 'cancelled' ];then
+        if [ ${{ job.status }} == 'cancelled' ];then
           for each in ${{join(steps.message_statuses.outputs.*, ' ')}};do
             name=$(echo "$each" | cut -d":" -f3 | cut -d"#" -f2)
             pattern=$(echo "$each" | grep ':hourglass_flowing_sand:' || true)
@@ -80,6 +74,12 @@ runs:
             fi
             name=$(echo "$each" | cut -d":" -f3 | cut -d"#" -f2)
             echo "$name=$(echo "$each" | sed 's/#/ /')\n" >> $GITHUB_OUTPUT
+          done
+        elif [ -z ${{ inputs.update_status }} ];then
+          for each in $(echo ${{ inputs.status }})
+          do
+            echo "$each"
+            echo "$each=${{ env.emoji }} $each\n" >> $GITHUB_OUTPUT
           done
         else
           for each in ${{join(steps.message_statuses.outputs.*, ' ')}};do
@@ -96,10 +96,10 @@ runs:
     - name: Set Slack color
       shell: bash
       run: |
-        if [[ -z "${{ inputs.update_status }}" || "${{ inputs.color }}" == danger ]];then
-          echo "color=${{ inputs.color }}" >> $GITHUB_ENV
-        elif [ ${{ job.status }} == 'cancelled' ];then
+        if [ ${{ job.status }} == 'cancelled' ];then
           echo "color=warning" >> $GITHUB_ENV
+        elif [[ -z "${{ inputs.update_status }}" || "${{ inputs.color }}" == danger ]];then
+          echo "color=${{ inputs.color }}" >> $GITHUB_ENV
         else
           for each in ${{join(steps.status.outputs.*, ' ')}};do
             name=$(echo "$each" | cut -d":" -f3 | cut -d"#" -f2)
