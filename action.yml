@@ -41,7 +41,7 @@ runs:
         else
           statuses=$(curl -X GET \
           "https://slack.com/api/conversations.history?channel=${{ env.channel_id }}&inclusive=true&latest=${{ inputs.message_id }}&limit=1&pretty=1" \
-          -H "Authorization: Bearer ${{ env.SLACK_BOT_TOKEN }}" | jq -r '.messages[].attachments[].fields[]|select(.title=="':github_actions: <https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}|${{ github.workflow }}> status:'") | .value' | sed '/^$/d' | sed 's/ /#/')
+          -H "Authorization: Bearer ${{ env.SLACK_BOT_TOKEN }}" | jq -r '.messages[].attachments[].fields[]|select(.title=="Workflow status:") | .value' | sed '/^$/d' | sed 's/ /#/')
           for each in $statuses;do
             echo "$each"
             name=$(echo $each | cut -d":" -f3 | cut -d"#" -f2)
@@ -108,13 +108,13 @@ runs:
         update-ts: ${{ inputs.message_id }}
         payload: |
           {
-            "text": ":github: <https://github.com/${{ github.repository }}|${{ github.repository }}>\n:git_br: <https://github.com/${{ github.repository }}/tree/${{ github.head_ref || github.ref_name}}|${{ github.head_ref || github.ref_name}}> - <${{ github.event.pull_request.html_url || github.event.head_commit.url }}|${{ github.event_name }}> from *${{ github.actor }}*",
+            "text": ":github: <https://github.com/${{ github.repository }}|${{ github.repository }}>\n:git_br: <https://github.com/${{ github.repository }}/tree/${{ github.head_ref || github.ref_name}}|${{ github.head_ref || github.ref_name}}> - <${{ github.event.pull_request.html_url || github.event.head_commit.url }}|${{ github.event_name }}> from *${{ github.actor }}*\n:github_actions: <https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}|${{ github.workflow }}>:arrow_heading_down:",
             "attachments": [
               {
                 "color": "${{ env.color }}",
                 "fields": [
                   {
-                    "title": ":github_actions: <https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}|${{ github.workflow }}> status:",
+                    "title": "Workflow status:",
                     "value": "${{join(steps.status.outputs.*, '\n')}}",
                     "short": true
                   }
