@@ -32,10 +32,6 @@ runs:
         -H  "accept: application/x-www-form-urlencoded" \
         -H  "Authorization: Bearer ${{ env.SLACK_BOT_TOKEN }}" | jq -r '.channels[]|select(.name=="'${{ inputs.channel }}'") | .id')
         echo "channel_id=$get_channel_id" >> $GITHUB_ENV
-    - name: Set Status field
-      shell: bash
-      run: |
-        echo "status=Workflow status:" >> $GITHUB_ENV
     - name: Get message statuses
       shell: bash
       id: message_statuses
@@ -98,7 +94,6 @@ runs:
             else
               echo "color=warning" >> $GITHUB_ENV
               each=$(echo "$each" | sed "s/:hourglass_flowing_sand:/:o:/")
-              echo "status=Workflow status: :o: Cancelled" >> $GITHUB_ENV
             fi
           done
         else
@@ -130,7 +125,7 @@ runs:
                 "color": "${{ env.color }}",
                 "fields": [
                   {
-                    "title": "${{ env.status }}",
+                    "title": "Workflow status:",
                     "value": "${{join(steps.status.outputs.*, '\n')}}",
                     "short": true
                   }
