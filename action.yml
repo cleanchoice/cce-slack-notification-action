@@ -100,6 +100,7 @@ runs:
               each=$(echo "$each" | sed "s/:hourglass_flowing_sand:/:o:/")
               echo "status=Workflow status: :o: Cancelled" >> $GITHUB_ENV
             fi
+          done
         else
           for each in ${{join(steps.status.outputs.*, ' ')}};do
             name=$(echo "$each" | cut -d":" -f3 | cut -d"#" -f2)
