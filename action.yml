@@ -32,6 +32,10 @@ runs:
         -H  "accept: application/x-www-form-urlencoded" \
         -H  "Authorization: Bearer ${{ env.SLACK_BOT_TOKEN }}" | jq -r '.channels[]|select(.name=="'${{ inputs.channel }}'") | .id')
         echo "channel_id=$get_channel_id" >> $GITHUB_ENV
+    - name: Set Status field
+      shell: bash
+      run: |
+        echo "status=Workflow status:" >> $GITHUB_ENV
     - name: Get message statuses
       shell: bash
       id: message_statuses
@@ -85,6 +89,17 @@ runs:
       run: |
         if [[ -z "${{ inputs.update_status }}" || "${{ inputs.color }}" == danger ]];then
           echo "color=${{ inputs.color }}" >> $GITHUB_ENV
+        elif [ ${{ job.status }} == 'cancelled' ];then
+          for each in ${{join(steps.status.outputs.*, ' ')}};do
+            name=$(echo "$each" | cut -d":" -f3 | cut -d"#" -f2)
+            pattern=$(echo "$each" | grep ':hourglass_flowing_sand:' || true)
+            if [ -z $pattern ];then
+              echo "job already done - $each"
+            else
+              echo "color=warning" >> $GITHUB_ENV
+              each=$(echo "$each" | sed "s/:hourglass_flowing_sand:/:o:/")
+              echo "status=Workflow status: :o: Cancelled" >> $GITHUB_ENV
+            fi
         else
           for each in ${{join(steps.status.outputs.*, ' ')}};do
             name=$(echo "$each" | cut -d":" -f3 | cut -d"#" -f2)
@@ -114,7 +129,7 @@ runs:
                 "color": "${{ env.color }}",
                 "fields": [
                   {
-                    "title": "Workflow status:",
+                    "title": "${{ env.status }}",
                     "value": "${{join(steps.status.outputs.*, '\n')}}",
                     "short": true
                   }
