@@ -72,7 +72,7 @@ runs:
           for each in ${{join(steps.message_statuses.outputs.*, ' ')}};do
             pattern=$(echo "$each" | grep ':hourglass_flowing_sand:' || true)
             if [ -z $pattern ];then
-              continue
+              echo "skipped"
             else
               each=$(echo "$each" | sed "s/:hourglass_flowing_sand:/:o:/")
             fi
