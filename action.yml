@@ -117,6 +117,7 @@ runs:
           echo "event=delete" >> $GITHUB_ENV
         else
           echo "event=<${{ github.event.pull_request.html_url || github.event.head_commit.url }}|${{ github.event_name }}>" >> $GITHUB_ENV
+        fi
     - name: Set Timestamp
       shell: bash
       run: echo "timestamp=$(date +%s)" >> $GITHUB_ENV
