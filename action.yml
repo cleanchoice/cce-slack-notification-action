@@ -110,6 +110,13 @@ runs:
             fi
           done
         fi
+    - name: Set event
+      shell: bash
+      run: |
+        if [ ${{ github.event_name }} == 'delete' ];then
+          echo "event=delete" >> $GITHUB_ENV
+        else
+          echo "event=<${{ github.event.pull_request.html_url || github.event.head_commit.url }}|${{ github.event_name }}>" >> $GITHUB_ENV
     - name: Set Timestamp
       shell: bash
       run: echo "timestamp=$(date +%s)" >> $GITHUB_ENV
@@ -121,7 +128,7 @@ runs:
         update-ts: ${{ inputs.message_id }}
         payload: |
           {
-            "text": ":github: <https://github.com/${{ github.repository }}|${{ github.repository }}>\n:git_br: <https://github.com/${{ github.repository }}/tree/${{ github.head_ref || github.ref_name}}|${{ github.head_ref || github.ref_name}}> - ${{ github.event_name == 'delete' && 'delete' || (<github.event.pull_request.html_url || github.event.head_commit.url|github.event_name>) }} from *${{ github.actor }}*\n:github_actions: <https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}|${{ github.workflow }}>",
+            "text": ":github: <https://github.com/${{ github.repository }}|${{ github.repository }}>\n:git_br: <https://github.com/${{ github.repository }}/tree/${{ github.head_ref || github.ref_name}}|${{ github.head_ref || github.ref_name}}> - ${{ env.event }} from *${{ github.actor }}*\n:github_actions: <https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}|${{ github.workflow }}>",
             "attachments": [
               {
                 "color": "${{ env.color }}",
